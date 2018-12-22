@@ -108,11 +108,43 @@ def make_request(request):
     return request
   return None
 
-def get_random_endpoint_for_person(to_text, endpoints, from_text="Your F-O-A-A-S Skill"):
-    return "http://foaas.com/{}/{}/{}".format(random.choice(endpoints), urllib.quote(to_text), urllib.quote(from_text))
+# TODO: use a library to do this
+def langToCode(lang):
+    lang = lang.lower()
+    if (lang == "dutch" or lang == "nederlands"):
+        return "nl"
+    elif (lang == "german" or lang == "deutsch"):
+        return "de"
+    elif (lang == "spanish" or lang == "espanol"):
+        return "es"
+    elif (lang == "french" or lang == "francais"):
+        return "fr"
+    elif (lang == "italian" or lang == "italiono"):
+        return "it"
+    elif (lang == "portugese"):
+        return "pt"
+    elif (lang == "polish"):
+        return "pl"
+    elif (lang == "serbian"):
+        return "sr"
+    elif (lang == "danish" or lang == "dansk"):
+        return "da"
+    elif (lang == "chinese"):
+        return "zh"
+    else:
+        return "en"
 
-def get_random_endpoint(endpoints, from_text="Your F-O-A-A-S Skill"):
-    return "http://foaas.com/{}/{}".format(random.choice(endpoints), urllib.quote(from_text))
+def get_random_endpoint_for_person(to_text, lang, endpoints, from_text="Your F-O-A-A-S Skill"):
+    i18n = ""
+    if lang != None:
+        i18n = "?i18n=" + langToCode(lang)
+    return "http://foaas.com/{}/{}/{}{}".format(random.choice(endpoints), urllib.quote(to_text), urllib.quote(from_text), i18n)
+
+def get_random_endpoint(lang, endpoints, from_text="Your F-O-A-A-S Skill"):
+    i18n = ""
+    if lang != None:
+        i18n = "?i18n=" + langToCode(lang)
+    return "http://foaas.com/{}/{}{}".format(random.choice(endpoints), urllib.quote(from_text), i18n)
 
 name_endpoints = list()
 generic_endpoints = list()
@@ -146,9 +178,11 @@ def get_message(request, default_text):
     message = make_request(request)['message']
   except:
     print("Get message failed", sys.exc_info()[0])
+  #strip "from"
+  message = message[:message.rfind(" - ")]
   return message
 
-def get_insult(kw, default_text):
+def get_insult(kw, lang, default_text):
   global generic_endpoints, name_endpoints
   speech_output = default_text
   url = None
@@ -158,10 +192,12 @@ def get_insult(kw, default_text):
       get_operations()
       try:
         if kw:
-          url = get_random_endpoint_for_person(kw, name_endpoints)
+          url = get_random_endpoint_for_person(kw, lang, name_endpoints)
         else:
-          url = get_random_endpoint(generic_endpoints)
+          url = get_random_endpoint(lang, generic_endpoints)
         speech_output = get_message(url, speech_output)
+        # hack for buggy i18n responses
+        speech_output = speech_output.replace(" !!,., !!", "")
         retry = 0
       except:
 	pass
@@ -177,11 +213,14 @@ def communicate_with_foaas(intent, session):
     should_end_session = True
     speech_output = "I didn't understand a fucking word!"
     
-    if intent['name'] == "AboutPerson":
+    if intent['name'] == "AboutPerson" or intent['name'] == "AboutPersonLang":
         kw = intent['slots']['KeyWord']['value']
-        speech_output = get_insult(kw, speech_output)
+        lang = None
+        if 'Lang' in intent['slots']:
+            lang = intent['slots']['Lang']['value']
+        speech_output = get_insult(kw, lang, speech_output)
     else:
-        speech_output = get_insult(None, speech_output)
+        speech_output = get_insult(None, None, speech_output)
 
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, speech_output, should_end_session))
@@ -218,7 +257,7 @@ def on_intent(intent_request, session):
     intent_name = intent_request['intent']['name']
 
     # Dispatch to your skill's intent handlers
-    if intent_name == "AboutPerson":
+    if intent_name == "AboutPerson" or intent_name == "AboutPersonLang":
         return communicate_with_foaas(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return get_help_response()
@@ -276,5 +315,3 @@ def lambda_handler(event, context):
         return on_intent(event['request'], event['session'])
     elif event['request']['type'] == "SessionEndedRequest":
         return on_session_ended(event['request'], event['session'])
-
-

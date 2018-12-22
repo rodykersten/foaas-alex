@@ -1,49 +1,80 @@
 {
-  "languageModel": {
-    "intents": [
-      {
-        "name": "AboutPerson",
-        "samples": [
-          "to insult {KeyWord}",
-          "about {KeyWord}",
-          "to describe {KeyWord}",
-          "what we think about {KeyWord}",
-          "what we think of {KeyWord}",
-          "how we feel about {KeyWord}",
-          "our opinion of {KeyWord}",
-          "about our opinion of {KeyWord}",
-          "what is our opinion of {KeyWord}",
-          "what our opinion of {KeyWord} is",
-          "what {KeyWord} means to us"
-        ],
-        "slots": [
-          {
-            "name": "KeyWord",
-            "type": "AMAZON.Person"
-          }
-        ]
-      },
-      {
-        "name": "AMAZON.CancelIntent",
-        "samples": []
-      },
-      {
-        "name": "AMAZON.HelpIntent",
-        "samples": []
-      },
-      {
-        "name": "AMAZON.PauseIntent",
-        "samples": []
-      },
-      {
-        "name": "AMAZON.ResumeIntent",
-        "samples": []
-      },
-      {
-        "name": "AMAZON.StopIntent",
-        "samples": []
-      }
-    ],
-    "invocationName": "the insult generator"
-  }
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "the insult generator",
+            "intents": [
+                {
+                    "name": "AboutPerson",
+                    "slots": [
+                        {
+                            "name": "KeyWord",
+                            "type": "AMAZON.Person"
+                        }
+                    ],
+                    "samples": [
+                        "to insult {KeyWord}",
+                        "to describe {KeyWord}",
+                        "what we think about {KeyWord}",
+                        "what we think of {KeyWord}",
+                        "how we feel about {KeyWord}",
+                        "our opinion of {KeyWord}",
+                        "about our opinion of {KeyWord}",
+                        "what is our opinion of {KeyWord}",
+                        "what our opinion of {KeyWord} is",
+                        "what {KeyWord} means to us"
+                    ]
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.PauseIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.ResumeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AboutPersonLang",
+                    "slots": [
+                        {
+                            "name": "KeyWord",
+                            "type": "AMAZON.Person"
+                        },
+                        {
+                            "name": "Lang",
+                            "type": "AMAZON.Language"
+                        }
+                    ],
+                    "samples": [
+                        "what {KeyWord} means to us in {Lang}",
+                        "what our opinion of {KeyWord} is in {Lang}",
+                        "what is our opinion of {KeyWord} in {Lang}",
+                        "about our opinion of {KeyWord} in {Lang}",
+                        "our opinion of {KeyWord} in {Lang}",
+                        "how we feel about {KeyWord} in {Lang}",
+                        "what we think of {KeyWord} in {Lang}",
+                        "what we think about {KeyWord} in {Lang}",
+                        "to describe {KeyWord} in {Lang}",
+                        "to insult {KeyWord} in {Lang}"
+                    ]
+                }
+            ],
+            "types": []
+        }
+    }
 }
